@@ -1,0 +1,46 @@
+<?php
+class Rectangle {
+    private float $width;
+    private float $height;
+
+  
+    public function __construct(float $width = 1, float $height = 1) {
+        $this->width = $width;
+        $this->height = $height;
+    }
+
+  
+    public function getArea(): float {
+        return $this->width * $this->height;
+    }
+
+
+    public function getPerimeter(): float {
+        return 2 * ($this->width + $this->height);
+    }
+
+
+    public function getWidth(): float {
+        return $this->width;
+    }
+
+    public function getHeight(): float {
+        return $this->height;
+    }
+}
+
+// Example usage
+$rect1 = new Rectangle(); // default 1x1
+echo "Rectangle 1 (Default)\n";
+echo "Width: " . $rect1->getWidth() . "\n";
+echo "Height: " . $rect1->getHeight() . "\n";
+echo "Area: " . $rect1->getArea() . "\n";
+echo "Perimeter: " . $rect1->getPerimeter() . "\n\n";
+
+$rect2 = new Rectangle(5, 3); // custom rectangle
+echo "Rectangle 2 (Custom 5x3)\n";
+echo "Width: " . $rect2->getWidth() . "\n";
+echo "Height: " . $rect2->getHeight() . "\n";
+echo "Area: " . $rect2->getArea() . "\n";
+echo "Perimeter: " . $rect2->getPerimeter() . "\n";
+?>
