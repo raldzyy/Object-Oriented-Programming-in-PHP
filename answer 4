@@ -1,0 +1,90 @@
+<?php
+// Database.php
+class Database {
+    protected $pdo;
+
+    public function __construct($host, $dbname, $user, $pass) {
+        try {
+            $this->pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            die("Database Connection Failed: " . $e->getMessage());
+        }
+    }
+
+    public function create($table, $data) {
+        $keys = implode(", ", array_keys($data));
+        $values = ":" . implode(", :", array_keys($data));
+        $stmt = $this->pdo->prepare("INSERT INTO $table ($keys) VALUES ($values)");
+        return $stmt->execute($data);
+    }
+
+    public function read($table) {
+        $stmt = $this->pdo->query("SELECT * FROM $table");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function update($table, $data, $id) {
+        $set = "";
+        foreach ($data as $key => $value) {
+            $set .= "$key = :$key, ";
+        }
+        $set = rtrim($set, ", ");
+        $stmt = $this->pdo->prepare("UPDATE $table SET $set WHERE id = :id");
+        $data['id'] = $id;
+        return $stmt->execute($data);
+    }
+
+    public function delete($table, $id) {
+        $stmt = $this->pdo->prepare("DELETE FROM $table WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+}
+
+// Student.php
+class Student extends Database {
+    protected $table = "students";
+}
+
+// Attendance.php
+class Attendance extends Database {
+    protected $table = "attendance";
+}
+
+// HTML CRUD template (index.php)
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRUD Example</title>
+</head>
+<body>
+    <h2>Student CRUD</h2>
+    <form method="POST" action="">
+        <input type="text" name="name" placeholder="Enter student name" required>
+        <button type="submit" name="add">Add Student</button>
+    </form>
+
+    <h3>Student List</h3>
+    <ul>
+        <?php
+        $db = new Student("localhost", "school_db", "root", "");
+        if (isset($_POST['add'])) {
+            $db->create("students", ["name" => $_POST['name']]);
+        }
+
+        $students = $db->read("students");
+        foreach ($students as $student) {
+            echo "<li>{$student['name']} 
+                <a href='?delete={$student['id']}'>Delete</a>
+            </li>";
+        }
+
+        if (isset($_GET['delete'])) {
+            $db->delete("students", $_GET['delete']);
+            header("Location: index.php");
+        }
+        ?>
+    </ul>
+</body>
+</html>
