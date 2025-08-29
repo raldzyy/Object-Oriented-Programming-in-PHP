@@ -1,0 +1,47 @@
+<?php
+class Student {
+    private string $name;
+    private array $courses = [];
+    private float $courseFee = 1450;
+
+    public function __construct(string $name) {
+        $this->name = $name;
+    }
+
+    public function addCourse(string $course): void {
+        $this->courses[] = $course;
+    }
+
+    public function removeCourse(string $course): void {
+        $index = array_search($course, $this->courses);
+        if ($index !== false) {
+            unset($this->courses[$index]);
+            $this->courses = array_values($this->courses);
+        }
+    }
+
+    public function getTotalFee(): float {
+        return count($this->courses) * $this->courseFee;
+    }
+
+    public function getCourses(): array {
+        return $this->courses;
+    }
+
+    public function getName(): string {
+        return $this->name;
+    }
+}
+
+// Example usage
+$student = new Student("Juan Dela Cruz");
+$student->addCourse("Math");
+$student->addCourse("Science");
+$student->addCourse("English");
+
+$student->removeCourse("Science");
+
+echo "Student: " . $student->getName() . "\n";
+echo "Courses: " . implode(", ", $student->getCourses()) . "\n";
+echo "Total Fee: PHP " . $student->getTotalFee() . "\n";
+?>
